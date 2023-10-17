@@ -1,0 +1,27 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/cpp
+{
+    "name": "C++",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    // Configure tool-specific properties.
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "EditorConfig.EditorConfig",
+                "amiralizadeh9480.cpp-helper",
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.cmake-tools"
+            ]
+        }
+    },
+    "containerEnv": {
+        "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}"
+    },
+    "features": {
+        "ghcr.io/KevinGliewe/devcontainer-features/aider:1": {}
+    },
+    "remoteUser": "vscode"
+}

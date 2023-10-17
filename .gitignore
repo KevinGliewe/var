@@ -1,0 +1,20 @@
+# Build folders
+build*/
+install*/
+_build*/
+cmake-build*/
+
+# CMake
+CMakeUserPresets.json
+build
+
+# VCPKG
+vcpkg_installed
+
+# IDEs
+.idea/
+.vs/
+
+# Mac
+.DS_Store
+.aider*
