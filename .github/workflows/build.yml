@@ -17,6 +17,9 @@ jobs:
 
     - name: Install Vcpkg
       uses: johnwason/vcpkg-action@v5
+      with:
+        manifest-dir: ${{ github.workspace }} # Set to directory containing vcpkg.json
+        revision: '501db0f17ef6df184fcdbfbe0f87cde2313b6ab1'
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{ github.workspace }}/build
