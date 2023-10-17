@@ -16,7 +16,8 @@ jobs:
 
     - uses: lukka/get-cmake@latest
 
-    - uses: johnwason/vcpkg-action@v5
+    - name: Install Vcpkg
+      uses: johnwason/vcpkg-action@v5
       manifest-dir: ${{ github.workspace }} # Set to directory containing vcpkg.json
       revision: '501db0f17ef6df184fcdbfbe0f87cde2313b6ab1'
 
