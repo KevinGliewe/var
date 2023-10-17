@@ -1,8 +1,10 @@
 name: Build, Package and Upload
 
 on:
-  release:
-    types: [created]  # Trigger this workflow on release creation
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   build-and-package:
@@ -16,22 +18,19 @@ jobs:
 
     - uses: lukka/get-cmake@latest
 
-    - name: Install Vcpkg
-      uses: johnwason/vcpkg-action@v5
-      with:
-        manifest-dir: ${{ github.workspace }} # Set to directory containing vcpkg.json
-        revision: '501db0f17ef6df184fcdbfbe0f87cde2313b6ab1'
+    - uses: friendlyanon/setup-vcpkg@v1
+      with: { committish: 501db0f17ef6df184fcdbfbe0f87cde2313b6ab1 }
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{ github.workspace }}/build
     
     - name: Configure CMake
       shell: bash
-      run: cmake ${{ github.workspace }} -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -B ${{ github.workspace }}/build
+      run: cmake ${{ github.workspace }} -DCMAKE_BUILD_TYPE=Release -B ${{ github.workspace }}/build
     
     - name: Build
-      run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build-type }}
-
+      run: cmake --build ${{ github.workspace }}/build --config Release
+    
     - name: Test
       working-directory: ${{ github.workspace }}/build
       run: ctest --verbose
@@ -44,12 +43,23 @@ jobs:
         cd build/install
         tar czf ../../${{ matrix.os }}-${{ matrix.architecture }}-package.tar.gz *
 
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
     - name: Upload
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ github.event.release.upload_url }}  # This pulls from the release event
+        upload_url: ${{ steps.create_release.outputs.upload_url }}  # This pulls from the release event
         asset_path: ${{ github.workspace }}/${{ matrix.os }}-${{ matrix.architecture }}-package.tar.gz
         asset_name: ${{ matrix.os }}-${{ matrix.architecture }}-package.tar.gz
         asset_content_type: application/gzip
