@@ -1,8 +1,15 @@
 find_package(GTest CONFIG QUIET)
 
 if(NOT GTest_FOUND)
-  message(STATUS "GTest not found - skipping tests. Set VAR_BUILD_TESTS=OFF or provide GTest via vcpkg.")
-  return()
+  message(STATUS "GTest not found via find_package - trying FetchContent")
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG        v1.14.0
+  )
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(googletest)
 endif()
 
 add_executable(var_test

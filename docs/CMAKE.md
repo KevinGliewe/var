@@ -57,3 +57,18 @@ ctest --preset test-release
 ```
 
 Ensure `VCPKG_ROOT` is set in your environment.
+
+## Local Testing (without vcpkg)
+
+On systems with `libgtest-dev` (e.g. Ubuntu/Debian), tests can be built without vcpkg.
+If GTest is not found, the test CMake will fall back to FetchContent to fetch googletest.
+
+```bash
+# Install dependencies (Ubuntu/Debian)
+sudo apt-get install ninja-build libgtest-dev
+
+# If the default compiler (clang) has linker issues with libstdc++, use g++:
+cmake -B build -G Ninja -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+ctest --test-dir build
+```
