@@ -1,24 +1,24 @@
-cmake_minimum_required(VERSION 3.27)
-
-# Define the library
 add_library(var STATIC
     var.cpp
-#    vmap.cpp
+    # vmap.cpp - not yet integrated
 )
 
-# Define the include DIRs
-target_include_directories(var PUBLIC
+add_library(var::var ALIAS var)
+
+target_include_directories(var
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
         $<INSTALL_INTERFACE:include>
-    PRIVATE
 )
 
-# Install the library and headers
+target_compile_features(var PUBLIC cxx_std_17)
+
 install(TARGETS var
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-install(DIRECTORY ../include/ DESTINATION include)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../include/
+    DESTINATION include
+)

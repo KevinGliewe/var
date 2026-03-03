@@ -86,6 +86,21 @@ macOS-case:
 c++ HW.cpp  -o HW  -L. -lvar_mac -std=c++17
 ./HW 
 ```
+
+>### CMake / FetchContent
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(var
+    GIT_REPOSITORY https://github.com/dimonpokemon81/var.git
+    GIT_TAG        v1.2.0
+)
+FetchContent_MakeAvailable(var)
+target_link_libraries(your_target PRIVATE var::var)
+```
+
+See [docs/CMAKE.md](docs/CMAKE.md) for full build and integration details.
+
 ----
 
 # Quick review ( some cases of usage and nuances )

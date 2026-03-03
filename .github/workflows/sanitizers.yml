@@ -1,0 +1,76 @@
+name: Sanitizers
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  asan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup CMake
+        uses: lukka/get-cmake@v3.29
+
+      - name: Setup vcpkg
+        uses: friendlyanon/setup-vcpkg@v1
+        with:
+          committish: 501db0f17ef6df184fcdbfbe0f87cde2313b6ab1
+
+      - name: Configure (AddressSanitizer)
+        run: |
+          cmake -B build-asan -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address" \
+            -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
+        shell: bash
+
+      - name: Build
+        run: cmake --build build-asan --config Debug
+        shell: bash
+
+      - name: Test
+        working-directory: build-asan
+        run: ctest --output-on-failure -C Debug
+        shell: bash
+        env:
+          ASAN_OPTIONS: detect_leaks=1:abort_on_error=1
+
+  ubsan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup CMake
+        uses: lukka/get-cmake@v3.29
+
+      - name: Setup vcpkg
+        uses: friendlyanon/setup-vcpkg@v1
+        with:
+          committish: 501db0f17ef6df184fcdbfbe0f87cde2313b6ab1
+
+      - name: Configure (UndefinedBehaviorSanitizer)
+        run: |
+          cmake -B build-ubsan -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="-fsanitize=undefined -fno-omit-frame-pointer" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=undefined" \
+            -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
+        shell: bash
+
+      - name: Build
+        run: cmake --build build-ubsan --config Debug
+        shell: bash
+
+      - name: Test
+        working-directory: build-ubsan
+        run: ctest --output-on-failure -C Debug
+        shell: bash
